@@ -1,4 +1,5 @@
 import { createClient } from '@/utils/supabase/client';
+import bcrypt from 'bcryptjs';
 
 interface FormData {
   username: string;
@@ -14,7 +15,7 @@ export async function handleStampSubmit(formData: FormData) {
     .eq('username', formData.username)
     .single();
 
-  if (userError || !user || user.pin !== parseInt(formData.pin)) {
+  if (userError || !user || !bcrypt.compareSync(formData.pin, user.pin)) {
     return { success: false, message: 'Invalid username or PIN' };
   }
 
