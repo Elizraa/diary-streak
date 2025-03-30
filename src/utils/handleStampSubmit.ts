@@ -1,0 +1,34 @@
+import { createClient } from '@/utils/supabase/client';
+
+interface FormData {
+  username: string;
+  pin: string;
+  notes?: string;
+}
+
+export async function handleStampSubmit(formData: FormData) {
+  const supabase = createClient();
+  const { data: user, error: userError } = await supabase
+    .from('users')
+    .select('id, pin')
+    .eq('username', formData.username)
+    .single();
+
+  if (userError || !user || user.pin !== parseInt(formData.pin)) {
+    return { success: false, message: 'Invalid username or PIN' };
+  }
+
+  const { error: stampError } = await supabase.from('stamps').insert([
+    {
+      user_id: user.id,
+      notes: formData.notes || null,
+      created_at: new Date().toISOString(),
+    },
+  ]);
+
+  if (stampError) {
+    return { success: false, message: `Error: ${stampError.message}` };
+  }
+
+  return { success: true, message: 'Stamped in successfully!' };
+}
