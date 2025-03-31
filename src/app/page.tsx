@@ -1,10 +1,17 @@
 import DailyForm from '@/components/DailyForm';
+import SignupModal from '@/components/SignupModal';
 
 export default function Home() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <h1 className="text-blue-700">Day Streak 1</h1>
-      <DailyForm />
+    <div className="min-h-screen bg-gradient-to-b from-gray-950 to-gray-900 flex flex-col items-center justify-center p-4">
+      <div className="max-w-md w-full mx-auto">
+        <DailyForm />
+
+        <div className="mt-6 text-center">
+          <p className="text-gray-400 mb-2">Don&apos;t have an account yet?</p>
+          <SignupModal />
+        </div>
+      </div>
     </div>
   );
 }

@@ -9,5 +9,8 @@ export async function registerUser(username: string, pin: string) {
     .from('users')
     .insert([{ username, pin: hashedPin }]);
 
-  return error ? `Error: ${error.message}` : 'User registered!';
+  if (error) {
+    return { success: false, message: error.message };
+  }
+  return { success: true, message: 'User Registered' };
 }
