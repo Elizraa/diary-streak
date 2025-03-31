@@ -1,9 +1,9 @@
 import { registerUser } from '../../src/utils/registerUser';
-import { hashPassword } from '../../src/utils/hashPassword';
+import { hashPin } from '../../src/utils/hashPin';
 import { createClient } from '../../src/utils/supabase/client';
 
 jest.mock('../../src/utils/supabase/client');
-jest.mock('../../src/utils/hashPassword');
+jest.mock('../../src/utils/hashPin');
 
 describe('registerUser', () => {
   let mockInsert;
@@ -16,12 +16,12 @@ describe('registerUser', () => {
   });
 
   it('should register a user successfully', async () => {
-    hashPassword.mockReturnValue('hashed_pin');
+    hashPin.mockReturnValue('hashed_pin');
     mockInsert.mockResolvedValue({ error: null });
 
     const result = await registerUser('testuser', '1234');
 
-    expect(hashPassword).toHaveBeenCalledWith('1234');
+    expect(hashPin).toHaveBeenCalledWith('1234');
     expect(mockInsert).toHaveBeenCalledWith([
       { username: 'testuser', pin: 'hashed_pin' },
     ]);
@@ -29,7 +29,7 @@ describe('registerUser', () => {
   });
 
   it('should return an error message if registration fails', async () => {
-    hashPassword.mockReturnValue('hashed_pin');
+    hashPin.mockReturnValue('hashed_pin');
     mockInsert.mockResolvedValue({ error: { message: 'Database error' } });
 
     const result = await registerUser('testuser', '1234');
