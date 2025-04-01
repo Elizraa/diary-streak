@@ -1,12 +1,23 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import DailyStreakForm from '../../src/components/DailyForm';
 import { handleStampSubmit } from '../../src/utils/handleStampSubmit';
+import { useRouter } from 'next/navigation';
 
-jest.mock('../../src/utils/handleStampSubmit', () => ({
-  handleStampSubmit: jest.fn(),
-}));
+jest
+  .mock('../../src/utils/handleStampSubmit', () => ({
+    handleStampSubmit: jest.fn(),
+  }))
+  .mock('next/navigation', () => ({
+    useRouter: jest.fn(),
+  }));
 
 describe('DailyStreakForm', () => {
+  const mockPush = jest.fn();
+
+  beforeEach(() => {
+    useRouter.mockReturnValue({ push: mockPush });
+  });
+
   it('renders correctly', () => {
     render(<DailyStreakForm />);
     expect(screen.getByText(/Record Your Daily Streak/i)).toBeInTheDocument();
@@ -35,13 +46,7 @@ describe('DailyStreakForm', () => {
     });
     fireEvent.click(screen.getByText(/Submit Daily Stamp/i));
 
-    await waitFor(() =>
-      expect(
-        screen.getByText(
-          /Successfully recorded your dairy consumption for today!/i
-        )
-      ).toBeInTheDocument()
-    );
+    await waitFor(() => expect(mockPush).toHaveBeenCalledWith('/stamp'));
   });
 
   it('handles failed submission', async () => {

@@ -11,8 +11,8 @@ export async function getUserStamps(username: string) {
     .order('id', { ascending: false });
 
   if (error) {
-    return { success: false, message: `Error: ${error.message}`, stamps: [] };
+    return { success: false, message: `${error.message}`, stamps: [] };
   }
 
-  return { success: true, message: 'Stamped in successfully!', stamps };
+  return { success: true, message: 'Fetch Data Successfull!', stamps };
 }
