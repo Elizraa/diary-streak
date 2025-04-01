@@ -10,7 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Milk, Trophy, ArrowLeft, Lock } from 'lucide-react';
+import { BookOpenCheck, ArrowLeft, Lock, Flame } from 'lucide-react';
 import {
   getStampData,
   isStampDataValid,
@@ -93,16 +93,16 @@ export default function StampPage() {
     <div className="min-h-screen bg-gradient-to-b from-gray-950 to-gray-900 flex flex-col items-center justify-center p-4">
       <Card className="w-full max-w-md shadow-lg border-gray-800 bg-gray-900">
         <CardHeader className="bg-gradient-to-r from-gray-900 to-gray-800 rounded-t-lg border-b border-gray-800 pt-6 -mt-5">
-          <div className="flex items-center justify-center mb-4">
-            <Trophy className="h-12 w-12 text-yellow-400" />
+          <div className="flex items-center justify-center">
+            <BookOpenCheck className="h-20 w-20 text-orange-400" />
           </div>
-          <CardTitle className="text-purple-400 text-center">
-            Stamp Tracker
+          <CardTitle className="text-orange-400 text-2xl text-center">
+            Stamp Recorded!
           </CardTitle>
         </CardHeader>
         <CardContent className="pt-6 text-center">
           <div className="flex items-center justify-center mb-4">
-            <Milk className="h-8 w-8 text-purple-400 mr-2" />
+            <Flame className="h-8 w-8 text-orange-300 mr-2" />
             <h2 className="text-xl font-semibold text-white">
               {username}&apos;s Daily Stamp
             </h2>

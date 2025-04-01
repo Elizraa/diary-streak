@@ -15,7 +15,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { Loader2 } from 'lucide-react';
+import { BookOpenCheck, Loader2 } from 'lucide-react';
 import { handleStampSubmit } from '@/utils/handleStampSubmit';
 import { storeStampData } from '@/utils/stampStore';
 import { getUserStamps } from '@/utils/getStamp';
@@ -24,6 +24,7 @@ export default function DailyStreakForm() {
   const router = useRouter();
   const [username, setUsername] = useState('');
   const [pin, setPin] = useState('');
+  const [notes, setNotes] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -38,7 +39,7 @@ export default function DailyStreakForm() {
     setIsLoading(true);
     setError('');
 
-    const result = await handleStampSubmit({ username, pin });
+    const result = await handleStampSubmit({ username, pin, notes });
 
     if (!result.success) {
       setError(result.message);
@@ -75,7 +76,7 @@ export default function DailyStreakForm() {
           Enter your username and PIN to log today&apos;s stamp
         </CardDescription>
       </CardHeader>
-      <CardContent className="pt-6 bg-gray-900">
+      <CardContent className="bg-gray-900">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="username" className="text-gray-300">
@@ -103,6 +104,28 @@ export default function DailyStreakForm() {
               placeholder="Enter your PIN"
               disabled={isLoading}
               className="border-gray-700 bg-gray-800 text-white focus-visible:ring-purple-500 placeholder:text-gray-500"
+              inputMode="numeric"
+              pattern="[0-9]*"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="pin" className="text-gray-300">
+              Notes <span className="text-gray-500 text-sm">(optional)</span>
+            </Label>
+            <textarea
+              id="note"
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder="Is there a noteworthy event today, or what do you hope will happen?"
+              disabled={isLoading}
+              className="border-gray-700 bg-gray-800 text-white focus-visible:ring-purple-500 placeholder:text-gray-500 p-2 w-full h-32 resize-y"
+              rows={4}
+              style={{
+                whiteSpace: 'pre-wrap',
+                overflowWrap: 'break-word',
+                textAlign: 'left',
+              }}
             />
           </div>
 
@@ -110,7 +133,7 @@ export default function DailyStreakForm() {
 
           <Button
             type="submit"
-            className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+            className="w-full bg-purple-600 hover:bg-purple-700 text-white mt-6"
             disabled={isLoading}
           >
             {isLoading ? (
@@ -125,8 +148,9 @@ export default function DailyStreakForm() {
         </form>
       </CardContent>
       <CardFooter className="flex justify-center border-t border-gray-800 pt-4 bg-gray-900 rounded-b-lg">
-        <p className="text-sm text-gray-400">
-          Keep up your dairy streak for better health!
+        <p className="text-sm text-gray-400 inline-flex items-center">
+          Keep up your daily stamp for commitment!{' '}
+          <BookOpenCheck className="ml-1 text-orange-300" />
         </p>
       </CardFooter>
     </Card>
