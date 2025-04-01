@@ -1,12 +1,12 @@
-import Home from '@/app/page';
+import DailyStreakForm from '@/components/DailyForm';
 import { render } from '@testing-library/react';
 import { act } from 'react';
 
-it('renders homepage unchanged', async () => {
+it('renders Daily Streak Form unchanged', async () => {
   let container;
 
   await act(async () => {
-    ({ container } = render(<Home />));
+    ({ container } = render(<DailyStreakForm />));
   });
 
   expect(container).toMatchSnapshot();

@@ -1,0 +1,91 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders Daily Streak Form unchanged 1`] = `
+<div>
+  <div
+    class="text-card-foreground flex flex-col gap-6 rounded-xl border py-6 w-full shadow-lg border-gray-800 bg-gray-900"
+    data-slot="card"
+  >
+    <div
+      class="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 bg-gradient-to-r from-gray-900 to-gray-800 rounded-t-lg border-b border-gray-800 pt-6 -mt-5"
+      data-slot="card-header"
+    >
+      <div
+        class="leading-none font-semibold text-purple-400"
+        data-slot="card-title"
+      >
+        Record Your Daily Streak
+      </div>
+      <div
+        class="text-sm text-gray-400"
+        data-slot="card-description"
+      >
+        Enter your username and PIN to log today's stamp
+      </div>
+    </div>
+    <div
+      class="px-6 pt-6 bg-gray-900"
+      data-slot="card-content"
+    >
+      <form
+        class="space-y-4"
+      >
+        <div
+          class="space-y-2"
+        >
+          <label
+            class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-gray-300"
+            data-slot="label"
+            for="username"
+          >
+            Username
+          </label>
+          <input
+            class="file:text-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 flex h-9 w-full min-w-0 rounded-md border px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border-gray-700 bg-gray-800 text-white focus-visible:ring-purple-500 placeholder:text-gray-500"
+            data-slot="input"
+            id="username"
+            placeholder="Enter your username"
+            value=""
+          />
+        </div>
+        <div
+          class="space-y-2"
+        >
+          <label
+            class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-gray-300"
+            data-slot="label"
+            for="pin"
+          >
+            PIN
+          </label>
+          <input
+            class="file:text-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 flex h-9 w-full min-w-0 rounded-md border px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border-gray-700 bg-gray-800 text-white focus-visible:ring-purple-500 placeholder:text-gray-500"
+            data-slot="input"
+            id="pin"
+            placeholder="Enter your PIN"
+            type="password"
+            value=""
+          />
+        </div>
+        <button
+          class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive shadow-xs h-9 px-4 py-2 has-[>svg]:px-3 w-full bg-purple-600 hover:bg-purple-700 text-white"
+          data-slot="button"
+          type="submit"
+        >
+          Submit Daily Stamp
+        </button>
+      </form>
+    </div>
+    <div
+      class="items-center px-6 [.border-t]:pt-6 flex justify-center border-t border-gray-800 pt-4 bg-gray-900 rounded-b-lg"
+      data-slot="card-footer"
+    >
+      <p
+        class="text-sm text-gray-400"
+      >
+        Keep up your dairy streak for better health!
+      </p>
+    </div>
+  </div>
+</div>
+`;

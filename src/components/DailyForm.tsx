@@ -17,7 +17,7 @@ import { Label } from '@/components/ui/label';
 import { Loader2 } from 'lucide-react';
 import { handleStampSubmit } from '@/utils/handleStampSubmit';
 
-export default function DairyStreakForm() {
+export default function DailyStreakForm() {
   const [username, setUsername] = useState('');
   const [pin, setPin] = useState('');
   const [isLoading, setIsLoading] = useState(false);

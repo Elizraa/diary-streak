@@ -25,7 +25,7 @@ describe('registerUser', () => {
     expect(mockInsert).toHaveBeenCalledWith([
       { username: 'testuser', pin: 'hashed_pin' },
     ]);
-    expect(result).toBe('User registered!');
+    expect(result).toEqual({ message: 'User Registered', success: true });
   });
 
   it('should return an error message if registration fails', async () => {
@@ -34,6 +34,6 @@ describe('registerUser', () => {
 
     const result = await registerUser('testuser', '1234');
 
-    expect(result).toBe('Error: Database error');
+    expect(result).toEqual({ success: false, message: 'Database error' });
   });
 });
