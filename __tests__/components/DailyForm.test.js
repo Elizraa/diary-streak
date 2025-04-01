@@ -24,10 +24,13 @@ describe('DailyStreakForm', () => {
 
   beforeEach(() => {
     useRouter.mockReturnValue({ push: mockPush });
+    jest.useFakeTimers('modern');
+    jest.setSystemTime(new Date(2025, 4, 1));
   });
 
   afterEach(() => {
     mockPush.mockClear();
+    jest.useRealTimers();
   });
 
   it('renders correctly', () => {
@@ -63,6 +66,85 @@ describe('DailyStreakForm', () => {
     fireEvent.click(screen.getByText(/Submit Daily Stamp/i));
 
     await waitFor(() => expect(mockPush).toHaveBeenCalledWith('/stamp'));
+    expect(storeStampData).toHaveBeenCalledWith({
+      username: 'testuser',
+      stamp: 0,
+      mood: null,
+      timestamp: Date.now(),
+    });
+  });
+
+  it('handles successful submission with happy mood', async () => {
+    handleStampSubmit.mockResolvedValueOnce({ success: true });
+    getUserStamps.mockResolvedValueOnce({ success: true, stamps: [] });
+    render(<DailyStreakForm />);
+    fireEvent.change(screen.getByLabelText(/Username/i), {
+      target: { value: 'testuser' },
+    });
+    fireEvent.change(screen.getByLabelText(/PIN/i), {
+      target: { value: '1234' },
+    });
+    fireEvent.change(screen.getByTestId('note-textarea'), {
+      target: { value: 'This is a note' },
+    });
+    fireEvent.click(screen.getByTestId('happy-mood'));
+
+    fireEvent.click(screen.getByText(/Submit Daily Stamp/i));
+
+    await waitFor(() => expect(mockPush).toHaveBeenCalledWith('/stamp'));
+    expect(storeStampData).toHaveBeenCalledWith({
+      username: 'testuser',
+      stamp: 0,
+      mood: 'happy',
+      timestamp: Date.now(),
+    });
+  });
+
+  it('handles successful submission with sad mood', async () => {
+    handleStampSubmit.mockResolvedValueOnce({ success: true });
+    getUserStamps.mockResolvedValueOnce({ success: true, stamps: [] });
+    render(<DailyStreakForm />);
+    fireEvent.change(screen.getByLabelText(/Username/i), {
+      target: { value: 'testuser' },
+    });
+    fireEvent.change(screen.getByLabelText(/PIN/i), {
+      target: { value: '1234' },
+    });
+    fireEvent.click(screen.getByTestId('sad-mood'));
+
+    fireEvent.click(screen.getByText(/Submit Daily Stamp/i));
+
+    await waitFor(() => expect(mockPush).toHaveBeenCalledWith('/stamp'));
+    expect(storeStampData).toHaveBeenCalledWith({
+      username: 'testuser',
+      stamp: 0,
+      mood: 'sad',
+      timestamp: Date.now(),
+    });
+  });
+
+  it('handles successful submission when mood unchoosen', async () => {
+    handleStampSubmit.mockResolvedValueOnce({ success: true });
+    getUserStamps.mockResolvedValueOnce({ success: true, stamps: [] });
+    render(<DailyStreakForm />);
+    fireEvent.change(screen.getByLabelText(/Username/i), {
+      target: { value: 'testuser' },
+    });
+    fireEvent.change(screen.getByLabelText(/PIN/i), {
+      target: { value: '1234' },
+    });
+    fireEvent.click(screen.getByTestId('happy-mood'));
+    fireEvent.click(screen.getByTestId('happy-mood'));
+
+    fireEvent.click(screen.getByText(/Submit Daily Stamp/i));
+
+    await waitFor(() => expect(mockPush).toHaveBeenCalledWith('/stamp'));
+    expect(storeStampData).toHaveBeenCalledWith({
+      username: 'testuser',
+      stamp: 0,
+      mood: null,
+      timestamp: Date.now(),
+    });
   });
 
   it('handles failed submission', async () => {

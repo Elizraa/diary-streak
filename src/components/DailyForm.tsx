@@ -137,6 +137,7 @@ export default function DailyStreakForm() {
                     : 'bg-gray-800 hover:bg-gray-700 border border-gray-700'
                 }`}
                 disabled={isLoading}
+                data-testid="happy-mood"
               >
                 <SmileIcon
                   className={`h-8 w-8 ${mood === 'happy' ? 'text-white' : 'text-gray-400'}`}
@@ -152,6 +153,7 @@ export default function DailyStreakForm() {
                     : 'bg-gray-800 hover:bg-gray-700 border border-gray-700'
                 }`}
                 disabled={isLoading}
+                data-testid="sad-mood"
               >
                 <FrownIcon
                   className={`h-8 w-8 ${mood === 'sad' ? 'text-white' : 'text-gray-400'}`}
