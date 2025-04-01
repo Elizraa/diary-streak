@@ -172,7 +172,7 @@ export default function DailyStreakForm() {
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Is there a noteworthy event today, or what do you hope will happen?"
               disabled={isLoading}
-              className="border-gray-700 bg-gray-800 text-white focus-visible:ring-purple-500 placeholder:text-gray-500 p-2 w-full h-32 resize-y"
+              className="shadow-xs focus-visible:border-ring focus-visible:ring-[3px] border border-gray-700 bg-gray-800 rounded-xl text-white focus-visible:ring-purple-500 placeholder:text-gray-500 p-2 w-full h-32 resize-y"
               rows={4}
               style={{
                 whiteSpace: 'pre-wrap',
