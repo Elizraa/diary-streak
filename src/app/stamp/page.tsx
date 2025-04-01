@@ -10,7 +10,14 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { BookOpenCheck, ArrowLeft, Lock, Flame } from 'lucide-react';
+import {
+  BookOpenCheck,
+  ArrowLeft,
+  Lock,
+  Flame,
+  SmileIcon,
+  FrownIcon,
+} from 'lucide-react';
 import {
   getStampData,
   isStampDataValid,
@@ -23,6 +30,7 @@ export default function StampPage() {
   const [loading, setLoading] = useState(true);
   const [username, setUsername] = useState('');
   const [stamp, setStamp] = useState(0);
+  const [mood, setMood] = useState<string | null>(null);
 
   useEffect(() => {
     // Check if the stamp data exists and is valid
@@ -31,6 +39,7 @@ export default function StampPage() {
       if (data) {
         setUsername(data.username);
         setStamp(data.stamp);
+        setMood(data.mood || null);
         setAuthorized(true);
       }
     }
@@ -113,13 +122,34 @@ export default function StampPage() {
             <p className="text-purple-300">{stamp === 1 ? 'Day' : 'Days'}</p>
           </div>
 
+          {mood && (
+            <div
+              className={`p-4 rounded-md border mb-6 flex items-center justify-center gap-3 ${
+                mood === 'happy'
+                  ? 'bg-green-900/30 border-green-700'
+                  : 'bg-blue-900/30 border-blue-700'
+              }`}
+            >
+              {mood === 'happy' ? (
+                <SmileIcon className="h-6 w-6 text-green-400" />
+              ) : (
+                <FrownIcon className="h-6 w-6 text-blue-400" />
+              )}
+              <p
+                className={`${mood === 'happy' ? 'text-green-300' : 'text-blue-300'}`}
+              >
+                You were feeling {mood === 'happy' ? 'happy' : 'sad'} today
+              </p>
+            </div>
+          )}
+
           <div className="text-gray-300">
             <p className="mb-2">
               {stamp < 5
                 ? "Keep going! You're building a great habit."
                 : stamp < 10
-                  ? 'Impressive stamp! Your consistency is paying off.'
-                  : "Amazing dedication! You're a diary champion!"}
+                  ? 'Impressive number! Your consistency is paying off.'
+                  : "Amazing dedication! You're a stamp champion!"}
             </p>
             <p className="text-sm text-gray-400">
               Remember to come back tomorrow to continue your stamp!

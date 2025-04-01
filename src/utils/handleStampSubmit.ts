@@ -5,6 +5,7 @@ interface FormData {
   username: string;
   pin: string;
   notes?: string;
+  mood?: string | null;
 }
 
 export async function handleStampSubmit(formData: FormData) {
@@ -23,6 +24,7 @@ export async function handleStampSubmit(formData: FormData) {
     {
       user_id: user.id,
       notes: formData.notes || null,
+      mood: formData.mood || null,
       created_at: new Date().toISOString(),
     },
   ]);

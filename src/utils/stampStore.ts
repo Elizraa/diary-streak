@@ -5,6 +5,7 @@ type StampData = {
   username: string;
   stamp: number;
   timestamp: number;
+  mood: string | null;
 };
 
 // Store stamp data in sessionStorage

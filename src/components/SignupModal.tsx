@@ -50,18 +50,28 @@ export default function SignupModal() {
     setError('');
 
     const result = await registerUser(username, pin);
-    setSuccess(true);
 
     // Reset form
     setUsername('');
     setPin('');
     setConfirmPin('');
 
+    console.log(result);
+
     if (!result.success) {
+      if (
+        result.message ===
+        'duplicate key value violates unique constraint "users_username_key"'
+      ) {
+        setError('Username already exist');
+        setIsLoading(false);
+        return;
+      }
       setError(result.message || 'Failed to create account. Please try again.');
       setIsLoading(false);
       return;
     }
+    setSuccess(true);
 
     // Close modal after a delay
     setTimeout(() => {

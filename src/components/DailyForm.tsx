@@ -15,15 +15,18 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { BookOpenCheck, Loader2 } from 'lucide-react';
+import { BookOpenCheck, FrownIcon, Loader2, SmileIcon } from 'lucide-react';
 import { handleStampSubmit } from '@/utils/handleStampSubmit';
 import { storeStampData } from '@/utils/stampStore';
 import { getUserStamps } from '@/utils/getStamp';
+
+type Mood = 'happy' | 'sad' | null;
 
 export default function DailyStreakForm() {
   const router = useRouter();
   const [username, setUsername] = useState('');
   const [pin, setPin] = useState('');
+  const [mood, setMood] = useState<Mood>(null);
   const [notes, setNotes] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -39,7 +42,7 @@ export default function DailyStreakForm() {
     setIsLoading(true);
     setError('');
 
-    const result = await handleStampSubmit({ username, pin, notes });
+    const result = await handleStampSubmit({ username, pin, notes, mood });
 
     if (!result.success) {
       setError(result.message);
@@ -59,12 +62,22 @@ export default function DailyStreakForm() {
     storeStampData({
       username,
       stamp: resultStamps.stamps.length,
+      mood,
       timestamp: Date.now(),
     });
 
     // Navigate to the streak page without query parameters
     router.push('/stamp');
   }
+
+  const handleMood = (moodChosen: Mood) => {
+    if (moodChosen === mood) {
+      setMood(null);
+      return;
+    }
+
+    setMood(moodChosen);
+  };
 
   return (
     <Card className="w-full shadow-lg border-gray-800 bg-gray-900">
@@ -107,6 +120,44 @@ export default function DailyStreakForm() {
               inputMode="numeric"
               pattern="[0-9]*"
             />
+          </div>
+
+          <div className="space-y-2">
+            <Label className="text-gray-300">
+              How are you feeling today?{' '}
+              <span className="text-gray-500 text-sm">(optional)</span>
+            </Label>
+            <div className="flex gap-3">
+              <Button
+                type="button"
+                onClick={() => handleMood('happy')}
+                className={`flex-1 h-16 ${
+                  mood === 'happy'
+                    ? 'bg-green-600 hover:bg-green-700 border-2 border-green-400'
+                    : 'bg-gray-800 hover:bg-gray-700 border border-gray-700'
+                }`}
+                disabled={isLoading}
+              >
+                <SmileIcon
+                  className={`h-8 w-8 ${mood === 'happy' ? 'text-white' : 'text-gray-400'}`}
+                />
+              </Button>
+
+              <Button
+                type="button"
+                onClick={() => handleMood('sad')}
+                className={`flex-1 h-16 ${
+                  mood === 'sad'
+                    ? 'bg-blue-600 hover:bg-blue-700 border-2 border-blue-400'
+                    : 'bg-gray-800 hover:bg-gray-700 border border-gray-700'
+                }`}
+                disabled={isLoading}
+              >
+                <FrownIcon
+                  className={`h-8 w-8 ${mood === 'sad' ? 'text-white' : 'text-gray-400'}`}
+                />
+              </Button>
+            </div>
           </div>
 
           <div className="space-y-2">
