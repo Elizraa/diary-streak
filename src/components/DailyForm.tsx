@@ -2,6 +2,7 @@
 
 import type React from 'react';
 
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -16,14 +17,15 @@ import {
 import { Label } from '@/components/ui/label';
 import { Loader2 } from 'lucide-react';
 import { handleStampSubmit } from '@/utils/handleStampSubmit';
+import { storeStampData } from '@/utils/stampStore';
+import { getUserStamps } from '@/utils/getStamp';
 
 export default function DailyStreakForm() {
+  const router = useRouter();
   const [username, setUsername] = useState('');
   const [pin, setPin] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [streak, setStreak] = useState<number | null>(null);
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -43,10 +45,24 @@ export default function DailyStreakForm() {
       setIsLoading(false);
       return;
     }
-    setStreak(1);
-    setSuccess(true);
-    setTimeout(() => setSuccess(false), 3000);
-    setIsLoading(false);
+
+    const resultStamps = await getUserStamps(username);
+
+    if (!resultStamps.success) {
+      setError(resultStamps.message);
+      setIsLoading(false);
+      return;
+    }
+
+    // Store the streak data in sessionStorage
+    storeStampData({
+      username,
+      stamp: resultStamps.stamps.length,
+      timestamp: Date.now(),
+    });
+
+    // Navigate to the streak page without query parameters
+    router.push('/stamp');
   }
 
   return (
@@ -91,25 +107,6 @@ export default function DailyStreakForm() {
           </div>
 
           {error && <p className="text-red-400 text-sm">{error}</p>}
-
-          {streak !== null && (
-            <div className="bg-gray-800 p-4 rounded-md border border-gray-700">
-              <p className="text-purple-300 font-medium">
-                Current streak:{' '}
-                <span className="font-bold text-xl text-white">
-                  {streak} {streak === 1 ? 'day' : 'days'}
-                </span>
-              </p>
-            </div>
-          )}
-
-          {success && (
-            <div className="bg-gray-800 p-4 rounded-md border border-green-900">
-              <p className="text-green-400">
-                Successfully recorded your dairy consumption for today!
-              </p>
-            </div>
-          )}
 
           <Button
             type="submit"
