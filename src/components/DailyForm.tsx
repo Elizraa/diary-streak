@@ -177,6 +177,7 @@ export default function DailyStreakForm() {
                 overflowWrap: 'break-word',
                 textAlign: 'left',
               }}
+              data-testid="note-textarea"
             />
           </div>
 

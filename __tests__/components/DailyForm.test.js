@@ -1,6 +1,8 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import DailyStreakForm from '../../src/components/DailyForm';
 import { handleStampSubmit } from '../../src/utils/handleStampSubmit';
+import { getUserStamps } from '../../src/utils/getStamp';
+import { storeStampData } from '../../src/utils/stampStore';
 import { useRouter } from 'next/navigation';
 
 jest
@@ -9,6 +11,12 @@ jest
   }))
   .mock('next/navigation', () => ({
     useRouter: jest.fn(),
+  }))
+  .mock('../../src/utils/getStamp', () => ({
+    getUserStamps: jest.fn(),
+  }))
+  .mock('../../src/utils/stampStore', () => ({
+    storeStampData: jest.fn(),
   }));
 
 describe('DailyStreakForm', () => {
@@ -18,8 +26,13 @@ describe('DailyStreakForm', () => {
     useRouter.mockReturnValue({ push: mockPush });
   });
 
+  afterEach(() => {
+    mockPush.mockClear();
+  });
+
   it('renders correctly', () => {
     render(<DailyStreakForm />);
+
     expect(screen.getByText(/Record Your Daily Streak/i)).toBeInTheDocument();
   });
 
@@ -35,15 +48,18 @@ describe('DailyStreakForm', () => {
 
   it('handles successful submission', async () => {
     handleStampSubmit.mockResolvedValueOnce({ success: true });
-
+    getUserStamps.mockResolvedValueOnce({ success: true, stamps: [] });
     render(<DailyStreakForm />);
-
     fireEvent.change(screen.getByLabelText(/Username/i), {
       target: { value: 'testuser' },
     });
     fireEvent.change(screen.getByLabelText(/PIN/i), {
       target: { value: '1234' },
     });
+    fireEvent.change(screen.getByTestId('note-textarea'), {
+      target: { value: 'This is a note' },
+    });
+
     fireEvent.click(screen.getByText(/Submit Daily Stamp/i));
 
     await waitFor(() => expect(mockPush).toHaveBeenCalledWith('/stamp'));
@@ -54,19 +70,41 @@ describe('DailyStreakForm', () => {
       success: false,
       message: 'Invalid credentials',
     });
-
     render(<DailyStreakForm />);
-
     fireEvent.change(screen.getByLabelText(/Username/i), {
       target: { value: 'wronguser' },
     });
     fireEvent.change(screen.getByLabelText(/PIN/i), {
       target: { value: '0000' },
     });
+
     fireEvent.click(screen.getByText(/Submit Daily Stamp/i));
 
     await waitFor(() =>
       expect(screen.getByText(/Invalid credentials/i)).toBeInTheDocument()
     );
+    expect(mockPush).not.toHaveBeenCalled();
+  });
+
+  it('handles failed fetch stamps data', async () => {
+    handleStampSubmit.mockResolvedValueOnce({ success: true });
+    getUserStamps.mockResolvedValueOnce({
+      success: false,
+      message: 'Username not found',
+    });
+    render(<DailyStreakForm />);
+    fireEvent.change(screen.getByLabelText(/Username/i), {
+      target: { value: 'testuser' },
+    });
+    fireEvent.change(screen.getByLabelText(/PIN/i), {
+      target: { value: '1234' },
+    });
+
+    fireEvent.click(screen.getByText(/Submit Daily Stamp/i));
+
+    await waitFor(() =>
+      expect(screen.getByText(/Username not found/i)).toBeInTheDocument()
+    );
+    expect(mockPush).not.toHaveBeenCalled();
   });
 });
