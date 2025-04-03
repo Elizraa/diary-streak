@@ -84,4 +84,23 @@ describe('stampStore', () => {
       expect(result).toBe(true);
     });
   });
+
+  describe('clearStampData', () => {
+    it('should clear daily stamp data from sessionStorage', () => {
+      sessionStorage.setItem('dailyStampData', JSON.stringify(testData));
+
+      clearStampData();
+
+      const storedData = sessionStorage.getItem('dailyStampData');
+      expect(storedData).toBeNull();
+    });
+
+    it('should not throw error when window is undefined', () => {
+      const originalWindow = global.window;
+      delete global.window;
+
+      expect(() => clearStampData()).not.toThrow();
+      global.window = originalWindow;
+    });
+  });
 });
