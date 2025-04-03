@@ -183,7 +183,7 @@ export default function DailyStreakForm() {
             />
           </div>
 
-          {error && <p className="text-red-400 text-sm">{error}</p>}
+          {error && <p className="text-red-400 text-sm mb-0">{error}</p>}
 
           <Button
             type="submit"

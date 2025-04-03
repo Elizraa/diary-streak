@@ -115,3 +115,10 @@ destructive {
 .accordion-up {
   animation: accordion-up 0.2s ease-out;
 }
+
+@layer base {
+  button,
+  [role='button'] {
+    cursor: pointer;
+  }
+}

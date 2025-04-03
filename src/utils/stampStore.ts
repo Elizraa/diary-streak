@@ -11,14 +11,14 @@ type StampData = {
 // Store stamp data in sessionStorage
 export const storeStampData = (data: StampData): void => {
   if (typeof window !== 'undefined') {
-    sessionStorage.setItem('dairyStampData', JSON.stringify(data));
+    sessionStorage.setItem('dailyStampData', JSON.stringify(data));
   }
 };
 
 // Retrieve stamp data from sessionStorage
 export const getStampData = (): StampData | null => {
   if (typeof window !== 'undefined') {
-    const data = sessionStorage.getItem('dairyStampData');
+    const data = sessionStorage.getItem('dailyStampData');
     if (data) {
       return JSON.parse(data);
     }
@@ -29,7 +29,7 @@ export const getStampData = (): StampData | null => {
 // Clear stamp data from sessionStorage
 export const clearStampData = (): void => {
   if (typeof window !== 'undefined') {
-    sessionStorage.removeItem('dairyStampData');
+    sessionStorage.removeItem('dailyStampData');
   }
 };
 
