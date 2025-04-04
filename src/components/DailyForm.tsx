@@ -183,11 +183,11 @@ export default function DailyStreakForm() {
             />
           </div>
 
-          {error && <p className="text-red-400 text-sm mb-0">{error}</p>}
+          {error && <p className="text-red-400 text-sm mb-0.5">{error}</p>}
 
           <Button
             type="submit"
-            className="w-full bg-purple-600 hover:bg-purple-700 text-white mt-6"
+            className="w-full bg-purple-600 hover:bg-purple-700 text-white mt-5"
             disabled={isLoading}
           >
             {isLoading ? (

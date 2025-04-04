@@ -200,7 +200,7 @@ exports[`renders homepage unchanged 1`] = `
               />
             </div>
             <button
-              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive shadow-xs h-9 px-4 py-2 has-[>svg]:px-3 w-full bg-purple-600 hover:bg-purple-700 text-white mt-6"
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive shadow-xs h-9 px-4 py-2 has-[>svg]:px-3 w-full bg-purple-600 hover:bg-purple-700 text-white mt-5"
               data-slot="button"
               type="submit"
             >
@@ -243,13 +243,8 @@ exports[`renders homepage unchanged 1`] = `
         </div>
       </div>
       <div
-        class="mt-6 text-center"
+        class="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3"
       >
-        <p
-          class="text-gray-400 mb-2"
-        >
-          Don't have an account yet?
-        </p>
         <button
           aria-controls="radix-:r0:"
           aria-expanded="false"
@@ -260,6 +255,46 @@ exports[`renders homepage unchanged 1`] = `
           type="button"
         >
           Create Account
+        </button>
+        <button
+          aria-controls="radix-:r3:"
+          aria-expanded="false"
+          aria-haspopup="dialog"
+          class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border shadow-xs hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3 border-gray-700 bg-gray-800 hover:bg-gray-700 text-purple-400"
+          data-slot="dialog-trigger"
+          data-state="closed"
+          type="button"
+        >
+          <svg
+            class="lucide lucide-calendar mr-2 h-4 w-4"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M8 2v4"
+            />
+            <path
+              d="M16 2v4"
+            />
+            <rect
+              height="18"
+              rx="2"
+              width="18"
+              x="3"
+              y="4"
+            />
+            <path
+              d="M3 10h18"
+            />
+          </svg>
+          View Calendar
         </button>
       </div>
     </div>
