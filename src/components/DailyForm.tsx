@@ -18,7 +18,6 @@ import { Label } from '@/components/ui/label';
 import { BookOpenCheck, FrownIcon, Loader2, SmileIcon } from 'lucide-react';
 import { handleStampSubmit } from '@/utils/handleStampSubmit';
 import { storeStampData } from '@/utils/stampStore';
-import { getUserStamps } from '@/utils/getStamp';
 
 type Mood = 'happy' | 'sad' | null;
 
@@ -50,18 +49,12 @@ export default function DailyStreakForm() {
       return;
     }
 
-    const resultStamps = await getUserStamps(username);
-
-    if (!resultStamps.success) {
-      setError(resultStamps.message);
-      setIsLoading(false);
-      return;
-    }
+    const streak = result.streak ?? 0;
 
     // Store the streak data in sessionStorage
     storeStampData({
       username,
-      stamp: resultStamps.stamps.length,
+      streak: streak,
       mood,
       timestamp: Date.now(),
     });

@@ -29,7 +29,7 @@ export default function StampPage() {
   const [authorized, setAuthorized] = useState(false);
   const [loading, setLoading] = useState(true);
   const [username, setUsername] = useState('');
-  const [stamp, setStamp] = useState(0);
+  const [streak, setStreak] = useState(0);
   const [mood, setMood] = useState<string | null>(null);
 
   useEffect(() => {
@@ -38,7 +38,7 @@ export default function StampPage() {
       const data = getStampData();
       if (data) {
         setUsername(data.username);
-        setStamp(data.stamp);
+        setStreak(data.streak);
         setMood(data.mood || null);
         setAuthorized(true);
       }
@@ -118,8 +118,8 @@ export default function StampPage() {
           </div>
 
           <div className="bg-gray-800 p-6 rounded-md border border-gray-700 mb-6">
-            <div className="text-5xl font-bold text-white mb-2">{stamp}</div>
-            <p className="text-purple-300">{stamp === 1 ? 'Day' : 'Days'}</p>
+            <div className="text-5xl font-bold text-white mb-2">{streak}</div>
+            <p className="text-purple-300">{streak === 1 ? 'Day' : 'Days'}</p>
           </div>
 
           {mood && (
@@ -145,9 +145,9 @@ export default function StampPage() {
 
           <div className="text-gray-300">
             <p className="mb-2">
-              {stamp < 5
+              {streak < 5
                 ? "Keep going! You're building a great habit."
-                : stamp < 10
+                : streak < 10
                   ? 'Impressive number! Your consistency is paying off.'
                   : "Amazing dedication! You're a stamp champion!"}
             </p>

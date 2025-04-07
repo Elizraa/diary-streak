@@ -1,11 +1,22 @@
 import { handleStampSubmit } from '../../src/utils/handleStampSubmit';
+import {
+  getUserStreak,
+  updateUserStreak,
+  createUserStreak,
+} from '../../src/utils/streaks';
 import { createClient } from '../../src/utils/supabase/client';
 import bcrypt from 'bcryptjs';
 
-jest.mock('../../src/utils/supabase/client');
-jest.mock('bcryptjs', () => ({
-  compareSync: jest.fn(),
-}));
+jest
+  .mock('../../src/utils/supabase/client')
+  .mock('bcryptjs', () => ({
+    compareSync: jest.fn(),
+  }))
+  .mock('../../src/utils/streaks', () => ({
+    getUserStreak: jest.fn(),
+    updateUserStreak: jest.fn(),
+    createUserStreak: jest.fn(),
+  }));
 
 describe('handleStampSubmit', () => {
   let supabaseMock;
@@ -61,6 +72,7 @@ describe('handleStampSubmit', () => {
       data: userData,
     });
     bcrypt.compareSync.mockReturnValue(true);
+    getUserStreak.mockResolvedValue({ success: true, streak: 0 });
     supabaseMock.insert.mockResolvedValue({ error: null });
 
     const result = await handleStampSubmit({
@@ -83,6 +95,7 @@ describe('handleStampSubmit', () => {
     supabaseMock.insert.mockResolvedValue({
       error: { message: 'Insert failed' },
     });
+    getUserStreak.mockResolvedValue({ success: true, streak: 0 });
 
     const result = await handleStampSubmit({
       username: 'testuser',

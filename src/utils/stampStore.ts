@@ -3,7 +3,7 @@
 
 type StampData = {
   username: string;
-  stamp: number;
+  streak: number;
   timestamp: number;
   mood: string | null;
 };

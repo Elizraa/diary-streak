@@ -56,8 +56,6 @@ export default function SignupModal() {
     setPin('');
     setConfirmPin('');
 
-    console.log(result);
-
     if (!result.success) {
       if (
         result.message ===
