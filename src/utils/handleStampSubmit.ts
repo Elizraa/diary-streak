@@ -38,7 +38,11 @@ export async function handleStampSubmit(formData: FormData) {
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
     if (diffDays === 0) {
-      return { success: false, message: 'You have already stamped today!' };
+      return {
+        success: false,
+        message: 'You have already stamped today!',
+        alreadyStamped: true,
+      };
     }
 
     streak = diffDays === 1 ? streakData.streak + 1 : 1; // Increment streak only if last stamp was yesterday
