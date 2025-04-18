@@ -137,10 +137,10 @@ export default function DailyStreakForm() {
                 <Button
                   type="button"
                   onClick={() => handleMood('happy')}
-                  className={`flex-1 h-16 ${
+                  className={`flex-1 h-16 border ${
                     mood === 'happy'
-                      ? 'bg-green-600 hover:bg-green-700 border-2 border-green-400'
-                      : 'bg-gray-800 hover:bg-gray-700 border border-gray-700'
+                      ? 'bg-green-600 hover:bg-green-700 border-green-400'
+                      : 'bg-gray-800 hover:bg-gray-700 border-gray-700'
                   }`}
                   disabled={isLoading}
                   data-testid="happy-mood"
@@ -153,10 +153,10 @@ export default function DailyStreakForm() {
                 <Button
                   type="button"
                   onClick={() => handleMood('sad')}
-                  className={`flex-1 h-16 ${
+                  className={`flex-1 h-16 border ${
                     mood === 'sad'
-                      ? 'bg-blue-600 hover:bg-blue-700 border-2 border-blue-400'
-                      : 'bg-gray-800 hover:bg-gray-700 border border-gray-700'
+                      ? 'bg-blue-600 hover:bg-blue-700 border-blue-400'
+                      : 'bg-gray-800 hover:bg-gray-700 border-gray-700'
                   }`}
                   disabled={isLoading}
                   data-testid="sad-mood"
