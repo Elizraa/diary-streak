@@ -1,18 +1,61 @@
 import { createClient } from '@/utils/supabase/client';
 
-export async function getUserStamps(username: string) {
+// Type for calendar day data
+type StampData = {
+  date: Date; // Supabase 'created_at' will be a string, needs transformation
+  mood?: 'happy' | 'sad' | null;
+  note?: string;
+};
+
+// Adjusted type for what Supabase returns directly for 'stamps'
+type SupabaseStamp = {
+  created_at: string; // Supabase returns ISO string for timestamps
+  mood?: 'happy' | 'sad' | null;
+  notes?: string; // Assuming 'notes' is the column name for 'note'
+  // users field is not directly part of StampData, it's for the query
+};
+
+export type UserStampsResponse = {
+  success: boolean;
+  message: string;
+  data: { stamps: StampData[] }; // This is the final shape you want
+};
+
+export async function getUserStamps(
+  username: string,
+  isAuthorized: boolean
+): Promise<UserStampsResponse> {
   const supabase = createClient();
+  let dataToQuery = 'created_at, users!inner(username)';
+
+  if (isAuthorized) {
+    dataToQuery = 'notes, created_at, users!inner(username), mood';
+  }
 
   // Fetch stamps using a left join on users table
-  const { data: stamps, error } = await supabase
+  // Explicitly type the expected shape from Supabase
+  const { data: supabaseData, error } = await supabase
     .from('stamps')
-    .select('notes, created_at, users!inner(username)')
+    .select<string, SupabaseStamp>(dataToQuery) // <-- Type Supabase response here
     .eq('users.username', username)
     .order('id', { ascending: false });
 
   if (error) {
-    return { success: false, message: `${error.message}`, stamps: [] };
+    throw new Error(error.message);
   }
 
-  return { success: true, message: 'Fetch Data Successfull!', stamps };
+  // Transform Supabase data to your desired StampData format
+  const transformedStamps: StampData[] = supabaseData
+    ? supabaseData.map((stamp) => ({
+        date: new Date(stamp.created_at), // Convert string to Date
+        mood: stamp.mood,
+        note: stamp.notes, // Map 'notes' to 'note'
+      }))
+    : [];
+
+  return {
+    success: true,
+    message: 'Fetch Data Successful!',
+    data: { stamps: transformedStamps },
+  };
 }

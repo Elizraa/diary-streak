@@ -29,7 +29,7 @@ export async function updateUserStreak(userId: string, streak: number) {
 
   if (updateError) {
     console.error('Error updating streak:', updateError.message);
-    return { success: false, message: updateError.message };
+    throw new Error(updateError.message);
   }
 }
 
@@ -49,6 +49,6 @@ export async function createUserStreak(userId: string) {
 
   if (insertError) {
     console.error('Error creating streak:', insertError.message);
-    return { success: false, message: insertError.message };
+    throw new Error(insertError.message);
   }
 }

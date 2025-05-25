@@ -1,4 +1,5 @@
 import { handleStampSubmit } from '../../src/utils/handleStampSubmit';
+import { verifyUser } from '../../src/utils/verifyUser';
 import {
   getUserStreak,
   updateUserStreak,
@@ -16,6 +17,9 @@ jest
     getUserStreak: jest.fn(),
     updateUserStreak: jest.fn(),
     createUserStreak: jest.fn(),
+  }))
+  .mock('../../src/utils/verifyUser', () => ({
+    verifyUser: jest.fn(),
   }));
 
 describe('handleStampSubmit', () => {
@@ -33,28 +37,8 @@ describe('handleStampSubmit', () => {
     createClient.mockReturnValue(supabaseMock);
   });
 
-  it('should return error if user not found', async () => {
-    supabaseMock.single.mockResolvedValue({
-      data: null,
-      error: { message: 'User not found' },
-    });
-
-    const result = await handleStampSubmit({
-      username: 'testuser',
-      pin: '1234',
-    });
-
-    expect(result).toEqual({
-      success: false,
-      message: 'Invalid username or PIN',
-    });
-  });
-
-  it('should return error if PIN is incorrect', async () => {
-    supabaseMock.single.mockResolvedValue({
-      data: userData,
-    });
-    bcrypt.compareSync.mockReturnValue(false);
+  it('should return error if verify user failed', async () => {
+    verifyUser.mockRejectedValue(new Error('Invalid username or PIN'));
 
     const result = await handleStampSubmit({
       username: 'testuser',
@@ -65,13 +49,15 @@ describe('handleStampSubmit', () => {
       success: false,
       message: 'Invalid username or PIN',
     });
+    expect(verifyUser).toHaveBeenCalledTimes(1);
+    expect(verifyUser).toHaveBeenCalledWith({
+      username: 'testuser',
+      pin: 'wrongpin',
+    });
   });
 
   it('should return success if stamp is inserted correctly', async () => {
-    supabaseMock.single.mockResolvedValue({
-      data: userData,
-    });
-    bcrypt.compareSync.mockReturnValue(true);
+    verifyUser.mockResolvedValue(userData);
     getUserStreak.mockResolvedValue({ success: true, streak: 0 });
     supabaseMock.insert.mockResolvedValue({ error: null });
 
@@ -88,10 +74,7 @@ describe('handleStampSubmit', () => {
   });
 
   it('should return error if stamp insertion fails', async () => {
-    supabaseMock.single.mockResolvedValue({
-      data: userData,
-    });
-    bcrypt.compareSync.mockReturnValue(true);
+    verifyUser.mockResolvedValue(userData);
     supabaseMock.insert.mockResolvedValue({
       error: { message: 'Insert failed' },
     });
@@ -102,6 +85,6 @@ describe('handleStampSubmit', () => {
       pin: '1234',
     });
 
-    expect(result).toEqual({ success: false, message: 'Error: Insert failed' });
+    expect(result).toEqual({ success: false, message: 'Insert failed' });
   });
 });

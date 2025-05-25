@@ -3,56 +3,77 @@ import { createClient } from '../../src/utils/supabase/client';
 
 jest.mock('../../src/utils/supabase/client');
 
-describe('getUserStamps', () => {
-  let supabaseMock;
-  const username = 'Zeta';
-  const stampsData = [
-    { notes: 'example notes', created_at: '2025-04-01T17:09:14.692Z' },
-  ];
+let supabaseMock;
 
-  beforeEach(() => {
-    supabaseMock = {
-      from: jest.fn().mockReturnThis(),
-      select: jest.fn().mockReturnThis(),
-      eq: jest.fn().mockReturnThis(),
-      order: jest.fn(),
-    };
-    createClient.mockReturnValue(supabaseMock);
+beforeEach(() => {
+  supabaseMock = {
+    from: jest.fn().mockReturnThis(),
+    select: jest.fn().mockReturnThis(),
+    eq: jest.fn().mockReturnThis(),
+    order: jest.fn(),
+  };
+  createClient.mockReturnValue(supabaseMock);
+});
+
+describe('getUserStamps', () => {
+  const username = 'testuser';
+
+  it('should return transformed stamps for authorized user', async () => {
+    const mockData = [
+      {
+        created_at: '2024-01-01T00:00:00Z',
+        mood: 'happy',
+        notes: 'Good day!',
+        users: { username },
+      },
+    ];
+
+    supabaseMock.order.mockResolvedValue({ data: mockData, error: null });
+
+    const result = await getUserStamps(username, true);
+
+    expect(result.success).toBe(true);
+    expect(result.data.stamps[0]).toEqual({
+      date: new Date('2024-01-01T00:00:00Z'),
+      mood: 'happy',
+      note: 'Good day!',
+    });
+    expect(supabaseMock.select).toHaveBeenCalledWith(
+      'notes, created_at, users!inner(username), mood'
+    );
   });
 
-  it('should return error if user not found', async () => {
-    const errorMessage = 'User not found';
+  it('should return minimal fields for unauthorized user', async () => {
+    const mockData = [
+      {
+        created_at: '2024-01-01T00:00:00Z',
+        users: { username },
+      },
+    ];
+
+    supabaseMock.order.mockResolvedValue({ data: mockData, error: null });
+
+    const result = await getUserStamps(username, false);
+
+    expect(result.success).toBe(true);
+    expect(result.data.stamps[0]).toEqual({
+      date: new Date('2024-01-01T00:00:00Z'),
+      mood: undefined,
+      note: undefined,
+    });
+    expect(supabaseMock.select).toHaveBeenCalledWith(
+      'created_at, users!inner(username)'
+    );
+  });
+
+  it('should throw an error if Supabase returns error', async () => {
     supabaseMock.order.mockResolvedValue({
       data: null,
-      error: { message: errorMessage },
+      error: { message: 'Something went wrong' },
     });
 
-    const result = await getUserStamps({
-      username,
-    });
-
-    expect(result).toEqual({
-      success: false,
-      message: errorMessage,
-      stamps: [],
-    });
-  });
-
-  it('should return success and stamps data if data found', async () => {
-    supabaseMock.order.mockResolvedValue({
-      data: stampsData,
-    });
-
-    const result = await getUserStamps({
-      username: 'testuser',
-      pin: '1234',
-      notes: 'Test note',
-    });
-
-    expect(result).toEqual({
-      success: true,
-      message: 'Fetch Data Successfull!',
-      stamps: stampsData,
-    });
+    await expect(getUserStamps(username, true)).rejects.toThrow(
+      'Something went wrong'
+    );
   });
 });

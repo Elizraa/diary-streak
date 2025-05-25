@@ -70,7 +70,7 @@ export default function AlreadySubmittedModal({
         <DialogFooter className="flex flex-col sm:flex-row gap-2 sm:gap-0">
           <Button
             onClick={handleViewCalendar}
-            className="bg-purple-600 hover:bg-purple-700 text-white flex-1"
+            className="bg-purple-600 hover:bg-purple-700 text-white flex-1 mr-2"
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
             View Calendar
@@ -78,7 +78,7 @@ export default function AlreadySubmittedModal({
           <Button
             onClick={handleClose}
             variant="outline"
-            className="border-gray-700 bg-gray-800 hover:bg-gray-700 text-gray-300 flex-1"
+            className="border-gray-700 bg-gray-800 hover:bg-gray-700 text-gray-300 flex-1 ml-2"
           >
             Close
           </Button>
