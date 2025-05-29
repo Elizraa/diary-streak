@@ -10,7 +10,7 @@ export async function getUserStreak(userId: string) {
     .maybeSingle();
 
   if (error) {
-    return { success: false, message: `${error.message}`, streakData };
+    throw new Error(error.message);
   }
 
   return { success: true, message: 'Fetch Data Successfull!', streakData };

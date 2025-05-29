@@ -27,7 +27,6 @@ describe('getUserStamps', () => {
         users: { username },
       },
     ];
-
     supabaseMock.order.mockResolvedValue({ data: mockData, error: null });
 
     const result = await getUserStamps(username, true);
@@ -50,7 +49,6 @@ describe('getUserStamps', () => {
         users: { username },
       },
     ];
-
     supabaseMock.order.mockResolvedValue({ data: mockData, error: null });
 
     const result = await getUserStamps(username, false);
@@ -64,6 +62,15 @@ describe('getUserStamps', () => {
     expect(supabaseMock.select).toHaveBeenCalledWith(
       'created_at, users!inner(username)'
     );
+  });
+
+  it('should return empty array if no data found', async () => {
+    supabaseMock.order.mockResolvedValue({ error: null });
+
+    const result = await getUserStamps(username, false);
+
+    expect(result.success).toBe(true);
+    expect(result.data.stamps).toEqual([]);
   });
 
   it('should throw an error if Supabase returns error', async () => {

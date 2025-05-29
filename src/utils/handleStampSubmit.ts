@@ -21,20 +21,13 @@ export async function handleStampSubmit(formData: FormData) {
 
     const streakResponse = await getUserStreak(user.id);
 
-    if (!streakResponse.success) {
-      return { success: false, message: streakResponse.message };
-    }
-
     const { streakData } = streakResponse;
     if (streakData) {
-      console.log('streakData.last_stamp :>> ', streakData.last_stamp);
       const lastStamp = new Date(streakData.last_stamp); // Convert Supabase timestamptz to JS Date
       const today = new Date();
 
       const diffMs = today.getTime() - lastStamp.getTime(); // Use getTime() to get numbers
       const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-      console.log('today :>> ', today);
-      console.log('lastStamp :>> ', lastStamp);
       if (diffDays === 0) {
         return {
           success: false,

@@ -6,7 +6,6 @@ import {
   createUserStreak,
 } from '../../src/utils/streaks';
 import { createClient } from '../../src/utils/supabase/client';
-import bcrypt from 'bcryptjs';
 
 jest
   .mock('../../src/utils/supabase/client')
@@ -21,6 +20,8 @@ jest
   .mock('../../src/utils/verifyUser', () => ({
     verifyUser: jest.fn(),
   }));
+
+jest.useFakeTimers().setSystemTime(new Date('2025-01-01'));
 
 describe('handleStampSubmit', () => {
   let supabaseMock;
@@ -62,7 +63,6 @@ describe('handleStampSubmit', () => {
     const yesterdayTimestamp = new Date(
       todayTimestamp - 24 * 60 * 60 * 1000
     ).toISOString();
-    jest.spyOn(Date, 'now').mockReturnValue(todayTimestamp);
     getUserStreak.mockResolvedValue({
       success: true,
       streakData: { streak: 3, last_stamp: yesterdayTimestamp },
@@ -80,6 +80,42 @@ describe('handleStampSubmit', () => {
       streak: 4,
       message: 'Stamped in successfully!',
     });
+    expect(getUserStreak).toHaveBeenCalledWith(userData.id);
+    expect(updateUserStreak).toHaveBeenCalledWith(userData.id, 4);
+    expect(supabaseMock.insert).toHaveBeenCalledWith([
+      {
+        user_id: userData.id,
+        notes: 'Test note',
+        mood: null,
+        created_at: new Date(todayTimestamp).toISOString(),
+      },
+    ]);
+    expect(createUserStreak).not.toHaveBeenCalled();
+  });
+
+  it('should return reset stamp count if last stamp not yesterday', async () => {
+    verifyUser.mockResolvedValue(userData);
+    const todayTimestamp = Date.now();
+    const twoDaysAgo = new Date(
+      todayTimestamp - 24 * 2 * 60 * 60 * 1000
+    ).toISOString();
+    getUserStreak.mockResolvedValue({
+      success: true,
+      streakData: { streak: 3, last_stamp: twoDaysAgo },
+    });
+    supabaseMock.insert.mockResolvedValue({ error: null });
+
+    const result = await handleStampSubmit({
+      username: 'testuser',
+      pin: '1234',
+      notes: 'Test note',
+    });
+
+    expect(result).toEqual({
+      success: true,
+      streak: 1,
+      message: 'Stamped in successfully!',
+    });
   });
 
   it('should return error if stamp insertion fails', async () => {
@@ -87,10 +123,7 @@ describe('handleStampSubmit', () => {
     supabaseMock.insert.mockResolvedValue({
       error: { message: 'Insert failed' },
     });
-    getUserStreak.mockResolvedValue({
-      success: true,
-      streakData: { streak: 1 },
-    });
+    getUserStreak.mockResolvedValue({ success: true });
 
     const result = await handleStampSubmit({
       username: 'testuser',
@@ -98,5 +131,42 @@ describe('handleStampSubmit', () => {
     });
 
     expect(result).toEqual({ success: false, message: 'Insert failed' });
+  });
+
+  it('should return alreadyStamped message if user has already stamped today', async () => {
+    verifyUser.mockResolvedValue(userData);
+    const todayTimestamp = Date.now();
+    getUserStreak.mockResolvedValue({
+      success: true,
+      streakData: {
+        streak: 3,
+        last_stamp: new Date(todayTimestamp).toISOString(),
+      },
+    });
+
+    const result = await handleStampSubmit({
+      username: 'testuser',
+      pin: '1234',
+    });
+
+    expect(result).toEqual({
+      alreadyStamped: true,
+      message: 'You have already stamped today!',
+      success: false,
+    });
+  });
+
+  it('should return error if random error occured', async () => {
+    verifyUser.mockRejectedValue('Not an error object');
+
+    const result = await handleStampSubmit({
+      username: 'testuser',
+      pin: '1234',
+    });
+
+    expect(result).toEqual({
+      success: false,
+      message: 'An unknown error occurred.',
+    });
   });
 });
