@@ -58,7 +58,15 @@ describe('handleStampSubmit', () => {
 
   it('should return success if stamp is inserted correctly', async () => {
     verifyUser.mockResolvedValue(userData);
-    getUserStreak.mockResolvedValue({ success: true, streak: 0 });
+    const todayTimestamp = Date.now();
+    const yesterdayTimestamp = new Date(
+      todayTimestamp - 24 * 60 * 60 * 1000
+    ).toISOString();
+    jest.spyOn(Date, 'now').mockReturnValue(todayTimestamp);
+    getUserStreak.mockResolvedValue({
+      success: true,
+      streakData: { streak: 3, last_stamp: yesterdayTimestamp },
+    });
     supabaseMock.insert.mockResolvedValue({ error: null });
 
     const result = await handleStampSubmit({
@@ -69,6 +77,7 @@ describe('handleStampSubmit', () => {
 
     expect(result).toEqual({
       success: true,
+      streak: 4,
       message: 'Stamped in successfully!',
     });
   });
@@ -78,7 +87,10 @@ describe('handleStampSubmit', () => {
     supabaseMock.insert.mockResolvedValue({
       error: { message: 'Insert failed' },
     });
-    getUserStreak.mockResolvedValue({ success: true, streak: 0 });
+    getUserStreak.mockResolvedValue({
+      success: true,
+      streakData: { streak: 1 },
+    });
 
     const result = await handleStampSubmit({
       username: 'testuser',
