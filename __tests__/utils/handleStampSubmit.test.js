@@ -9,9 +9,6 @@ import { createClient } from '../../src/utils/supabase/client';
 
 jest
   .mock('../../src/utils/supabase/client')
-  .mock('bcryptjs', () => ({
-    compareSync: jest.fn(),
-  }))
   .mock('../../src/utils/streaks', () => ({
     getUserStreak: jest.fn(),
     updateUserStreak: jest.fn(),
