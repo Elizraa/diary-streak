@@ -20,6 +20,7 @@ import {
   ShieldCheck,
   ShieldAlert,
   StickyNote,
+  Flame,
 } from 'lucide-react';
 import { verifyUser } from '@/utils/verifyUser';
 import { getUserStamps } from '@/utils/getStamp';
@@ -56,6 +57,7 @@ export default function CalendarPage() {
   const [authorized, setAuthorized] = useState(false);
   const [calendarData, setCalendarData] = useState<DayData[]>([]);
   const [expandedCards, setExpandedCards] = useState<Set<number>>(new Set());
+  const [streak, setStreak] = useState(1);
 
   // Get username from URL params
   const username = searchParams.get('username') || '';
@@ -224,13 +226,13 @@ export default function CalendarPage() {
           </CardHeader>
 
           <CardContent className="pt-6">
+            <div className="flex items-center justify-center mb-4">
+              <div className="text-5xl font-bold text-white">{streak}</div>
+              <Flame className="h-12 w-12 text-orange-300 fill-orange-700 -ml-2" />
+            </div>
+
             <div className="mb-4 text-center">
-              <h3 className="text-gray-300 text-lg mb-2">Streak History</h3>
-              <p className="text-gray-500 text-sm">
-                {authorized
-                  ? 'Showing detailed view with mood information'
-                  : 'Showing basic streak information (enter PIN for detailed view)'}
-              </p>
+              <h3 className="text-gray-300 text-lg mb-2">Stamp History</h3>
             </div>
 
             {/* Column-based layout */}
