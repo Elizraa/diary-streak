@@ -1,13 +1,7 @@
 import { createClient } from '@/utils/supabase/client';
 import { createUserStreak, getUserStreak, updateUserStreak } from './streaks';
 import { verifyUser } from './verifyUser';
-
-interface FormData {
-  username: string;
-  pin: string;
-  notes?: string;
-  mood?: string | null;
-}
+import { FormData } from '@/types';
 
 export async function handleStampSubmit(formData: FormData) {
   try {

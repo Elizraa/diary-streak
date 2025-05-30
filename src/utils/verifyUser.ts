@@ -1,12 +1,8 @@
+import { UserFormData } from '@/types';
 import { createClient } from '@/utils/supabase/client';
 import bcrypt from 'bcryptjs';
 
-interface userFormData {
-  username: string;
-  pin: string;
-}
-
-export async function verifyUser(userFormData: userFormData) {
+export async function verifyUser(userFormData: UserFormData) {
   const supabase = createClient();
   const { data: user, error: userError } = await supabase
     .from('users')

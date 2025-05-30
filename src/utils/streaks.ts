@@ -1,10 +1,5 @@
+import { StreakData } from '@/types';
 import { createClient } from '@/utils/supabase/client';
-
-type SupabaseStreak = {
-  streak: number;
-  last_stamp: string;
-  // users field is not directly part of StampData, it's for the query
-};
 
 export async function getUserStreak(userId: string) {
   const supabase = createClient();
@@ -65,7 +60,7 @@ export async function getUserStreakByUsername(username: string) {
 
   const { data: streakData, error } = await supabase
     .from('streaks')
-    .select<string, SupabaseStreak>('streak, last_stamp, users!inner(username)')
+    .select<string, StreakData>('streak, last_stamp, users!inner(username)')
     .eq('users.username', username)
     .single();
 

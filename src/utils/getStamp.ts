@@ -1,25 +1,5 @@
+import { StampData, SupabaseStamp, UserStampsResponse } from '@/types';
 import { createClient } from '@/utils/supabase/client';
-
-// Type for calendar day data
-type StampData = {
-  date: Date; // Supabase 'created_at' will be a string, needs transformation
-  mood?: 'happy' | 'sad' | null;
-  note?: string;
-};
-
-// Adjusted type for what Supabase returns directly for 'stamps'
-type SupabaseStamp = {
-  created_at: string; // Supabase returns ISO string for timestamps
-  mood?: 'happy' | 'sad' | null;
-  notes?: string; // Assuming 'notes' is the column name for 'note'
-  // users field is not directly part of StampData, it's for the query
-};
-
-export type UserStampsResponse = {
-  success: boolean;
-  message: string;
-  data: { stamps: StampData[] }; // This is the final shape you want
-};
 
 export async function getUserStamps(
   username: string,

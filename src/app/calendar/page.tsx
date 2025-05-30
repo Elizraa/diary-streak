@@ -25,26 +25,7 @@ import {
 import { verifyUser } from '@/utils/verifyUser';
 import { getUserStamps } from '@/utils/getStamp';
 import { getUserStreakByUsername } from '@/utils/streaks';
-
-// Type for calendar day data
-type DayData = {
-  date: Date;
-  mood?: 'happy' | 'sad' | null;
-  note?: string;
-  userId?: string;
-};
-
-// Type for monthly data
-type MonthData = {
-  month: string;
-  year: number;
-  days: DayData[];
-};
-
-type StreakData = {
-  streak: number;
-  last_stamp: string;
-};
+import { DayData, MonthData, StreakData } from '../../types';
 
 const getStreakData = async (username: string): Promise<StreakData> => {
   try {

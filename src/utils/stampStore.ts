@@ -1,22 +1,17 @@
 // A simple client-side store for stamp data
 // In a real app, you might use a more robust state management solution
 
-type StampData = {
-  username: string;
-  streak: number;
-  timestamp: number;
-  mood: string | null;
-};
+import { StampDataForm } from '@/types';
 
 // Store stamp data in sessionStorage
-export const storeStampData = (data: StampData): void => {
+export const storeStampData = (data: StampDataForm): void => {
   if (typeof window !== 'undefined') {
     sessionStorage.setItem('dailyStampData', JSON.stringify(data));
   }
 };
 
 // Retrieve stamp data from sessionStorage
-export const getStampData = (): StampData | null => {
+export const getStampData = (): StampDataForm | null => {
   if (typeof window !== 'undefined') {
     const data = sessionStorage.getItem('dailyStampData');
     if (data) {
