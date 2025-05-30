@@ -2,6 +2,7 @@ import { createClient } from '@/utils/supabase/client';
 import { createUserStreak, getUserStreak, updateUserStreak } from './streaks';
 import { verifyUser } from './verifyUser';
 import { FormData } from '@/types';
+import { DEFAULT_STREAK, STREAK_RESET_DAYS } from '@/lib/constant';
 
 export async function handleStampSubmit(formData: FormData) {
   try {
@@ -29,14 +30,14 @@ export async function handleStampSubmit(formData: FormData) {
           alreadyStamped: true,
         };
       }
-      console.log('diffDays :>> ', diffDays);
-      streak = diffDays === 1 ? streakData.streak + 1 : 1; // Increment streak only if last stamp was yesterday
+      streak =
+        diffDays === STREAK_RESET_DAYS ? ++streakData.streak : DEFAULT_STREAK;
       await updateUserStreak(user.id, streak);
     }
 
     if (!streakData) {
       await createUserStreak(user.id);
-      streak = 1; // Start a new streak if no previous data exists
+      streak = DEFAULT_STREAK; // Start a new streak if no previous data exists
     }
 
     const { error: stampError } = await supabase.from('stamps').insert([

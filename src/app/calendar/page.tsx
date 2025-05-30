@@ -26,6 +26,7 @@ import { verifyUser } from '@/utils/verifyUser';
 import { getUserStamps } from '@/utils/getStamp';
 import { getUserStreakByUsername } from '@/utils/streaks';
 import { DayData, MonthData, StreakData } from '../../types';
+import { LOCALE_TIMESTRING } from '@/lib/constant';
 
 const getStreakData = async (username: string): Promise<StreakData> => {
   try {
@@ -113,7 +114,9 @@ export default function CalendarPage() {
       weekday: 'long',
       day: 'numeric',
     };
-    const parts = date.toLocaleDateString('en-US', options).split(' ');
+    const parts = date
+      .toLocaleDateString(LOCALE_TIMESTRING, options)
+      .split(' ');
     const day = parts[0].replace(',', ''); // remove comma from day
     const weekday = parts[1].replace(',', '');
     return `${day}, ${weekday}`;
@@ -173,7 +176,9 @@ export default function CalendarPage() {
           1
         );
         return {
-          month: monthDate.toLocaleDateString('en-US', { month: 'long' }),
+          month: monthDate.toLocaleDateString(LOCALE_TIMESTRING, {
+            month: 'long',
+          }),
           year: Number.parseInt(yearStr),
           days: days.sort((a, b) => a.date.getTime() - b.date.getTime()),
         };

@@ -1,3 +1,4 @@
+import { INVALID_PIN_OR_USERNAME_MESSAGE } from '@/lib/errorMessage';
 import { UserFormData } from '@/types';
 import { createClient } from '@/utils/supabase/client';
 import bcrypt from 'bcryptjs';
@@ -11,7 +12,7 @@ export async function verifyUser(userFormData: UserFormData) {
     .single();
 
   if (userError || !user || !bcrypt.compareSync(userFormData.pin, user.pin)) {
-    throw new Error('Invalid username or PIN');
+    throw new Error(INVALID_PIN_OR_USERNAME_MESSAGE);
   }
 
   return user;
