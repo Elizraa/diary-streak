@@ -34,6 +34,13 @@ type DayData = {
   userId?: string;
 };
 
+// Type for monthly data
+type MonthData = {
+  month: string;
+  year: number;
+  days: DayData[];
+};
+
 type StreakData = {
   streak: number;
   last_stamp: string;
@@ -74,7 +81,7 @@ export default function CalendarPage() {
   const [loading, setLoading] = useState(true);
   const [authorized, setAuthorized] = useState(false);
   const [calendarData, setCalendarData] = useState<DayData[]>([]);
-  const [expandedCards, setExpandedCards] = useState<Set<number>>(new Set());
+  const [expandedCards, setExpandedCards] = useState<Set<string>>(new Set());
   const [streak, setStreak] = useState(0);
 
   // Get username from URL params
@@ -121,19 +128,22 @@ export default function CalendarPage() {
 
   // Format date for display
   const formatDate = (date: Date): string => {
-    return date.toLocaleDateString('en-US', {
-      month: 'short',
+    const options: Intl.DateTimeFormatOptions = {
+      weekday: 'long',
       day: 'numeric',
-    });
+    };
+    const parts = date.toLocaleDateString('en-US', options).split(' ');
+    const day = parts[0].replace(',', ''); // remove comma from day
+    const weekday = parts[1].replace(',', '');
+    return `${day}, ${weekday}`;
   };
-
   // Handle card click to toggle note expansion
-  const toggleCard = (index: number) => {
+  const toggleCard = (dateKey: string) => {
     const newExpandedCards = new Set(expandedCards);
-    if (expandedCards.has(index)) {
-      newExpandedCards.delete(index);
+    if (expandedCards.has(dateKey)) {
+      newExpandedCards.delete(dateKey);
     } else {
-      newExpandedCards.add(index);
+      newExpandedCards.add(dateKey);
     }
     setExpandedCards(newExpandedCards);
   };
@@ -160,6 +170,45 @@ export default function CalendarPage() {
   };
 
   const [columnCount, setColumnCount] = useState(3);
+
+  // Group data by month and year
+  const groupDataByMonth = (data: DayData[]): MonthData[] => {
+    const monthGroups: { [key: string]: DayData[] } = {};
+
+    data.forEach((day) => {
+      const monthKey = `${day.date.getFullYear()}-${day.date.getMonth()}`;
+      if (!monthGroups[monthKey]) {
+        monthGroups[monthKey] = [];
+      }
+      monthGroups[monthKey].push(day);
+    });
+
+    return Object.entries(monthGroups)
+      .map(([key, days]) => {
+        const [yearStr, monthStr] = key.split('-');
+        const monthDate = new Date(
+          Number.parseInt(yearStr),
+          Number.parseInt(monthStr),
+          1
+        );
+        return {
+          month: monthDate.toLocaleDateString('en-US', { month: 'long' }),
+          year: Number.parseInt(yearStr),
+          days: days.sort((a, b) => a.date.getTime() - b.date.getTime()),
+        };
+      })
+      .sort((a, b) => {
+        const aDate = new Date(
+          a.year,
+          new Date(`${a.month} 1, ${a.year}`).getMonth()
+        );
+        const bDate = new Date(
+          b.year,
+          new Date(`${b.month} 1, ${b.year}`).getMonth()
+        );
+        return bDate.getTime() - aDate.getTime(); // Most recent first
+      });
+  };
 
   useEffect(() => {
     const handleResize = () => {
@@ -210,7 +259,7 @@ export default function CalendarPage() {
     );
   }
 
-  const columns = distributeIntoColumns(calendarData, columnCount);
+  const monthlyData = groupDataByMonth(calendarData);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-950 to-gray-900 flex flex-col items-center p-4">
@@ -253,88 +302,119 @@ export default function CalendarPage() {
                 <Flame className="h-12 w-12 text-orange-300 fill-orange-700" />
               </div>
             )}
-
             <div className="mb-4 text-center">
               <h3 className="text-gray-300 text-lg mb-2">Stamp History</h3>
             </div>
+            <div className="space-y-8">
+              {monthlyData.map((monthData) => {
+                const columns = distributeIntoColumns(
+                  monthData.days,
+                  columnCount
+                );
+                return (
+                  <div
+                    key={`${monthData.month}-${monthData.year}`}
+                    className="space-y-4"
+                  >
+                    {/* Month Header */}
+                    <div className="flex items-center gap-3">
+                      <h3 className="text-xl font-semibold text-white">
+                        {monthData.month}, {monthData.year}
+                      </h3>
+                      <div className="text-sm text-gray-400">
+                        {monthData.days.length}{' '}
+                        {monthData.days.length === 1 ? 'stamp' : 'stamps'}
+                      </div>
+                    </div>
 
-            {/* Column-based layout */}
-            <div className="flex gap-4">
-              {columns.map((column, columnIndex) => (
-                <div key={columnIndex} className="flex-1 flex flex-col gap-4">
-                  {column.map((day) => {
-                    const globalIndex = calendarData.findIndex(
-                      (d) => d.date.getTime() === day.date.getTime()
-                    );
-                    return (
-                      <div
-                        key={globalIndex}
-                        className="relative transition-all duration-300 ease-in-out"
-                      >
-                        {/* Main stamp card */}
+                    {/* Month Calendar */}
+                    <div className="flex gap-4">
+                      {columns.map((column, columnIndex) => (
                         <div
-                          className={`bg-gray-800 rounded-md border border-gray-700 p-3 flex items-center justify-between transition-all duration-300 ease-in-out ${
-                            day.note ? 'cursor-pointer hover:bg-gray-750' : ''
-                          } ${expandedCards.has(globalIndex) ? 'rounded-b-none' : ''}`}
-                          onClick={() => day.note && toggleCard(globalIndex)}
+                          key={columnIndex}
+                          className="flex-1 flex flex-col gap-4"
                         >
-                          <div className="flex items-center gap-2">
-                            <div>
-                              <div className="text-gray-300 font-medium">
-                                {formatDate(day.date)}
-                              </div>
-                            </div>
-
-                            {/* Note indicator */}
-                            {day.note && (
-                              <div className="ml-2">
-                                <StickyNote className="h-4 w-4 text-yellow-400" />
-                              </div>
-                            )}
-                          </div>
-
-                          <div className="flex items-center gap-2">
-                            {true && day.mood && (
+                          {column.map((day) => {
+                            const dateKey = day.date.toISOString();
+                            return (
                               <div
-                                className={`rounded-full p-2 ${
-                                  day.mood === 'happy'
-                                    ? 'bg-green-900/50'
-                                    : 'bg-blue-900/50'
-                                }`}
+                                key={dateKey}
+                                className="relative transition-all duration-300 ease-in-out"
                               >
-                                {day.mood === 'happy' ? (
-                                  <SmileIcon className="h-5 w-5 text-green-400" />
-                                ) : (
-                                  <FrownIcon className="h-5 w-5 text-blue-400" />
+                                {/* Main stamp card */}
+                                <div
+                                  className={`bg-gray-800 rounded-md border border-gray-700 p-3 flex items-center justify-between transition-all duration-300 ease-in-out min-h-16 ${
+                                    day.note
+                                      ? 'cursor-pointer hover:bg-gray-750'
+                                      : ''
+                                  } ${expandedCards.has(dateKey) ? 'rounded-b-none' : ''}`}
+                                  onClick={() =>
+                                    day.note && toggleCard(dateKey)
+                                  }
+                                >
+                                  <div className="flex items-center gap-2">
+                                    <div>
+                                      <div className="text-gray-300 font-medium">
+                                        {formatDate(day.date)}
+                                      </div>
+                                      {/* <div className="text-purple-300 text-sm">
+                                        Daily stamp recorded
+                                      </div> */}
+                                    </div>
+
+                                    {/* Note indicator */}
+                                    {day.note && (
+                                      <div className="ml-2">
+                                        <StickyNote className="h-4 w-4 text-yellow-400" />
+                                      </div>
+                                    )}
+                                  </div>
+
+                                  <div className="flex items-center gap-2">
+                                    {true && day.mood && (
+                                      <div
+                                        className={`rounded-full p-2 ${
+                                          day.mood === 'happy'
+                                            ? 'bg-green-900/50'
+                                            : 'bg-blue-900/50'
+                                        }`}
+                                      >
+                                        {day.mood === 'happy' ? (
+                                          <SmileIcon className="h-5 w-5 text-green-400" />
+                                        ) : (
+                                          <FrownIcon className="h-5 w-5 text-blue-400" />
+                                        )}
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+
+                                {/* Expandable note sub-card */}
+                                {day.note && (
+                                  <div
+                                    className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                                      expandedCards.has(dateKey)
+                                        ? 'max-h-32 opacity-100'
+                                        : 'max-h-0 opacity-0'
+                                    }`}
+                                  >
+                                    <div className="bg-gray-800/60 border-l border-r border-b border-gray-700/50 rounded-b-md p-3">
+                                      <p className="text-gray-400 text-sm italic">
+                                        &quot;{day.note}&quot;
+                                      </p>
+                                    </div>
+                                  </div>
                                 )}
                               </div>
-                            )}
-                          </div>
+                            );
+                          })}
                         </div>
-
-                        {/* Expandable note sub-card */}
-                        {day.note && (
-                          <div
-                            className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                              expandedCards.has(globalIndex)
-                                ? 'max-h-32 opacity-100'
-                                : 'max-h-0 opacity-0'
-                            }`}
-                          >
-                            <div className="bg-gray-800/60 border-l border-r border-b border-gray-700/50 rounded-b-md p-3">
-                              <p className="text-gray-400 text-sm italic">
-                                &quot;{day.note}&quot;
-                              </p>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              ))}
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-
             {calendarData.length === 0 && (
               <div className="text-center py-8 text-gray-400">
                 No streak data found for this user.
