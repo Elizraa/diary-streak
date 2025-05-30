@@ -1,5 +1,11 @@
 import { createClient } from '@/utils/supabase/client';
 
+type SupabaseStreak = {
+  streak: number;
+  last_stamp: string;
+  // users field is not directly part of StampData, it's for the query
+};
+
 export async function getUserStreak(userId: string) {
   const supabase = createClient();
 
@@ -13,7 +19,7 @@ export async function getUserStreak(userId: string) {
     throw new Error(error.message);
   }
 
-  return { success: true, message: 'Fetch Data Successfull!', streakData };
+  return { streakData };
 }
 
 export async function updateUserStreak(userId: string, streak: number) {
@@ -51,4 +57,21 @@ export async function createUserStreak(userId: string) {
     console.error('Error creating streak:', insertError.message);
     throw new Error(insertError.message);
   }
+}
+
+// get user streak by username
+export async function getUserStreakByUsername(username: string) {
+  const supabase = createClient();
+
+  const { data: streakData, error } = await supabase
+    .from('streaks')
+    .select<string, SupabaseStreak>('streak, last_stamp, users!inner(username)')
+    .eq('users.username', username)
+    .single();
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return { streakData };
 }

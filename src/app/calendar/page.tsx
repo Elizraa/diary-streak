@@ -24,28 +24,46 @@ import {
 } from 'lucide-react';
 import { verifyUser } from '@/utils/verifyUser';
 import { getUserStamps } from '@/utils/getStamp';
+import { getUserStreakByUsername } from '@/utils/streaks';
 
 // Type for calendar day data
 type DayData = {
   date: Date;
   mood?: 'happy' | 'sad' | null;
   note?: string;
+  userId?: string;
 };
 
-// Mock data for calendar display
-// In a real app, this would come from the database
+type StreakData = {
+  streak: number;
+  last_stamp: string;
+};
+
+const getStreakData = async (username: string): Promise<StreakData> => {
+  try {
+    const { streakData } = await getUserStreakByUsername(username);
+
+    if (!streakData) {
+      throw new Error('No streak data found for this user');
+    }
+
+    return streakData;
+  } catch (error) {
+    throw error;
+  }
+};
+
 const getStampsData = async (
   username: string,
   authorized: boolean
 ): Promise<DayData[]> => {
-  const data: DayData[] = [];
-
   try {
     const stampsData = await getUserStamps(username, authorized);
 
     return stampsData.data.stamps;
   } catch (error) {
     console.error('Error fetching stamps:', error);
+    const data: DayData[] = [];
     return data;
   }
 };
@@ -57,7 +75,7 @@ export default function CalendarPage() {
   const [authorized, setAuthorized] = useState(false);
   const [calendarData, setCalendarData] = useState<DayData[]>([]);
   const [expandedCards, setExpandedCards] = useState<Set<number>>(new Set());
-  const [streak, setStreak] = useState(1);
+  const [streak, setStreak] = useState(0);
 
   // Get username from URL params
   const username = searchParams.get('username') || '';
@@ -80,8 +98,11 @@ export default function CalendarPage() {
         }
 
         setCalendarData(await getStampsData(username, authorized));
+        const streakData = await getStreakData(username);
+        if (streakData.streak !== 0) {
+          setStreak(streakData.streak);
+        }
 
-        // Clear PIN from sessionStorage for security
         sessionStorage.removeItem('calendarPin');
       } catch (error) {
         console.error('Error verifying user:', error);
@@ -226,10 +247,12 @@ export default function CalendarPage() {
           </CardHeader>
 
           <CardContent className="pt-6">
-            <div className="flex items-center justify-center mb-4">
-              <div className="text-5xl font-bold text-white">{streak}</div>
-              <Flame className="h-12 w-12 text-orange-300 fill-orange-700 -ml-2" />
-            </div>
+            {streak > 0 && (
+              <div className="flex items-center justify-center mb-2 ml-2.5">
+                <div className="text-5xl font-bold text-white">{streak}</div>
+                <Flame className="h-12 w-12 text-orange-300 fill-orange-700" />
+              </div>
+            )}
 
             <div className="mb-4 text-center">
               <h3 className="text-gray-300 text-lg mb-2">Stamp History</h3>
